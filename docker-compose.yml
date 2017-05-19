@@ -1,0 +1,30 @@
+version: '2'
+services:
+  wpdata:
+    image: naturalmente/wp:wp-data
+  mysql:
+    image: naturalmente/wp:mariadb
+    depends_on:
+      - wpdata
+    volumes_from: 
+      - wpdata
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+  redis:
+    image: redis
+  webserver:
+    image: naturalmente/wp:php-fpm
+    depends_on:
+      - mysql
+      - redis
+      - wpdata
+    links:
+      - mysql:mysql
+      - redis:redis
+    volumes_from: 
+      - wpdata
+    environment:
+      - CI_ENV=development
+      - TZ=America/Sao_Paulo
+    restart: always
