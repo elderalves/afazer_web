@@ -10,8 +10,6 @@ services:
     tty: true
     volumes_from:
     - mysql-data
-    ports:
-    - 3306:3306/tcp
     labels:
       io.rancher.container.pull_image: always
       io.rancher.sidekicks: mysql-data
@@ -41,10 +39,6 @@ services:
     - data-wp
     labels:
       io.rancher.sidekicks: data-wp
-      traefik.enable: 'true'
-      traefik.priority: '0'
-      traefik.path.prefix: /
-      traefik.port: '80'
       io.rancher.container.pull_image: always
       io.rancher.scheduler.global: 'true'
   redis:
