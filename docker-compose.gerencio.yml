@@ -1,0 +1,55 @@
+version: '2'
+services:
+  mariadb:
+    image: naturalmente/wp:mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    stdin_open: true
+    volumes:
+    - /data/mysql:/var/lib/mysql
+    tty: true
+    volumes_from:
+    - mysql-data
+    ports:
+    - 3306:3306/tcp
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.sidekicks: mysql-data
+  data-wp:
+    image: naturalmente/wp:wp-data
+    links:
+    - mariadb:mysql
+    - redis:redis
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.container.start_once: 'true'
+  mysql-data:
+    image: naturalmente/wp:wp-data
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.container.start_once: 'true'
+  webserver:
+    image: naturalmente/wp:php-fpm
+    stdin_open: true
+    volumes:
+    - /data/wp:/var/www/src/public
+    tty: true
+    links:
+    - mariadb:mysql
+    - redis:redis
+    volumes_from:
+    - data-wp
+    labels:
+      io.rancher.sidekicks: data-wp
+      traefik.enable: 'true'
+      traefik.priority: '0'
+      traefik.path.prefix: /
+      traefik.port: '80'
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
+  redis:
+    image: redis
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
