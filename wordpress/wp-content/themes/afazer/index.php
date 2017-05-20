@@ -30,12 +30,12 @@
 
 
           <!--======= PAGINATION =========-->
-          <ul class="pagination">
+          <!--<ul class="pagination">
             <li><a href="#.">1</a></li>
             <li><a href="#.">2</a></li>
             <li><a href="#.">3</a></li>
             <li><a href="#."><i class="fa fa-angle-double-right"></i></a></li>
-          </ul>
+          </ul>-->
 
           <div class="sponsor-blog">
             <a href="#.">
