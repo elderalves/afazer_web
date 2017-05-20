@@ -59,7 +59,7 @@ RUN set -x && \
 
 # configuracoes nginx
 COPY /config/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY /config/nginx/default.conf /etc/nginx/conf.d
+COPY /config/nginx/conf.d/default.conf /etc/nginx/conf.d
 COPY /config/nginx/mime.types /etc/nginx/mime.types
 
 # configuracoes php

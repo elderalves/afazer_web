@@ -1,13 +1,11 @@
 version: '2'
 services:
-  wpdata:
-    image: naturalmente/wp:wp-data
   mysql:
-    image: naturalmente/wp:mariadb
-    depends_on:
-      - wpdata
-    volumes_from: 
-      - wpdata
+    build: mariadb/
+    ports: 
+     - 3306:3306
+    volumes:
+      - ./wordpress/sql:/docker-entrypoint-initdb.d
     restart: always
     environment:
       - MYSQL_DATABASE=wp_afazer
@@ -15,17 +13,15 @@ services:
   redis:
     image: redis
   webserver:
-    image: naturalmente/wp:php-fpm
-    volumes_from: 
-      - wpdata
-    ports: 
-     - 80:80
+    build: .
     volumes:
       - ./wordpress:/var/www/src/public
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+    ports: 
+     - 80:80
     depends_on:
       - mysql
       - redis
-      - wpdata
     links:
       - mysql:mysql
       - redis:redis
