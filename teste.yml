@@ -1,0 +1,54 @@
+version: '2'
+services:
+  mariadb:
+    image: naturalmente/wp:mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    stdin_open: true
+    volumes:
+    - /data/mysql:/var/lib/mysql
+    tty: true
+    volumes_from:
+    - mysql-data
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.sidekicks: mysql-data
+      io.rancher.scheduler.affinity:host_label: wp=true
+  data-wp:
+    image: naturalmente/wp:wp-data
+    links:
+    - mariadb:mysql
+    - redis:redis
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.container.start_once: 'true'
+      io.rancher.scheduler.affinity:host_label: wp=true
+  mysql-data:
+    image: naturalmente/wp:wp-data
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.container.start_once: 'true'
+      io.rancher.scheduler.affinity:host_label: wp=true
+  webserver:
+    image: naturalmente/wp:php-fpm
+    stdin_open: true
+    volumes:
+    - /data/wp:/var/www/src/public
+    tty: true
+    links:
+    - mariadb:mysql
+    - redis:redis
+    volumes_from:
+    - data-wp
+    labels:
+      io.rancher.sidekicks: data-wp
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.global: 'true'
+      io.rancher.scheduler.affinity:host_label: wp=true
+  redis:
+    image: redis
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:host_label: wp=true
